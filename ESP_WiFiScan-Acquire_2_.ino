@@ -48,22 +48,21 @@ void setup() {
   StartUp_OLED(); // Init Oled and fire up!
   Serial.println("OLED Init...");
   clear_display();
-  sendStrXY(" DANBICKS WIFI ", 0, 1); // 16 Character max per line with font set
-  sendStrXY("   SCANNER     ", 2, 1);
-  sendStrXY("START-UP ....  ", 4, 1);
-  delay(4000);
+  sendStrXY("START-UP ...  ", 6, 1);
+  delay(3500);
   Serial.println("Setup done");
+  clear_display(); // Clear OLED
 
   udp.begin(localPort);
   
 }
-
 
 void loop()
 {
   if (!Fl_NetworkUP)
   {
     Serial.println("Starting Process Scanning...");
+    sendStrXY("SCANNING ...", 0, 1);
     Scan_Wifi_Networks();
     //Draw_WAVES();
     delay(2000);
@@ -71,8 +70,7 @@ void loop()
     if (Fl_MyNetwork)
     {
       // Yep we have our network lets try and connect to it..
-      Serial.println("MyNetwork has been Found....");
-      Serial.println("Attempting Connection to Network..");
+      Serial.println("MyNetwork has been Found... attempting Connection to Network...");
       Do_Connect();
 
       if (Fl_NetworkUP)
@@ -95,9 +93,9 @@ void loop()
         // Connection failure
         Serial.println("Not Connected");
         clear_display(); // Clear OLED
-        sendStrXY("CHECK   NETWORK", 0, 1);
-        sendStrXY("   DETAILS     ", 2, 1);
-        sendStrXY("NO CONNECTION..", 6, 1); // YELLOW LINE DISPLAY
+        sendStrXY("CHECK NETWORK", 0, 1);
+        sendStrXY("DETAILS", 2, 1);
+        sendStrXY("NO CONNECTION...", 6, 1); // YELLOW LINE DISPLAY
         delay(3000);
       }
     }
@@ -106,9 +104,9 @@ void loop()
       // Nope my network not identified in Scan
       Serial.println("Not Connected");
       clear_display(); // Clear OLED
-      sendStrXY("  MY  NETWORK  ", 0, 1);
-      sendStrXY("  NOT FOUND IN ", 2, 1);
-      sendStrXY("     SCAN      ", 4, 1);
+      sendStrXY("MY NETWORK", 0, 1);
+      sendStrXY("NOT FOUND IN", 2, 1);
+      sendStrXY("SCAN", 4, 1);
       delay(3000);
     }
   }
@@ -136,9 +134,8 @@ void ntpRequest(){
 
     //the timestamp starts at byte 40 of the received packet and is four bytes,
     // or two words, long. First, esxtract the two words:
-
     unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+    unsigned long lowWord  = word(packetBuffer[42], packetBuffer[43]);
     // combine the four bytes (two words) into a long integer
     // this is NTP time (seconds since Jan 1 1900):
     unsigned long secsSince1900 = highWord << 16 | lowWord;
@@ -157,37 +154,34 @@ void ntpRequest(){
     sendStrXY("Time:", 6, 1);
     // print the hour, minute and second:
     Serial.print("The UTC time is ");       // UTC is the time at Greenwich Meridian (GMT)
-    
-    char display_buffer_hours[4];
-    String display_time_hours = String(((epoch  % 86400L) / 3600) + 2);
-    display_time_hours.toCharArray(display_buffer_hours, 4);
-    sendStrXY((display_buffer_hours), 6, 7);
-    
-    Serial.print((epoch  % 86400L) / 3600); // print the hour (86400 equals secs per day)
-    Serial.print(':');
-    sendStrXY((":"), 6, 9);
-    if ( ((epoch % 3600) / 60) < 10 ) {
-      // In the first 10 minutes of each hour, we'll want a leading '0'
-      Serial.print('00');
-      sendStrXY(("0"), 6, 10);
-    }
+    // --- HOURS ---
+    printTime(epoch, 1);
+    // --- MINUTES ---
     char display_buffer_minutes[4];
     String display_time_minutes = String((epoch  % 3600) / 60);
     display_time_minutes.toCharArray(display_buffer_minutes, 4);
-    sendStrXY((display_buffer_minutes), 6, 10);
+    sendStrXY((":"), 6, 9);
     Serial.print((epoch  % 3600) / 60); // print the minute (3600 equals secs per minute)
-    sendStrXY((":"), 6, 12);
     Serial.print(':');
     if ( (epoch % 60) < 10 ) {
-      // In the first 10 seconds of each minute, we'll want a leading '0'
       Serial.print('0');
-      sendStrXY(("0"), 6, 13);
+      sendStrXY(("0"), 6, 10);
+      sendStrXY((display_buffer_minutes), 6, 11);
     }
+    else{ sendStrXY((display_buffer_minutes), 6, 10); }
+    sendStrXY((":"), 6, 12);
+    // --- SECONDS ---
     char display_buffer_seconds[4];
     String display_time_seconds = String(epoch % 60);
     display_time_seconds.toCharArray(display_buffer_seconds, 4);
-    sendStrXY((display_buffer_seconds), 6, 13);
     Serial.println(epoch % 60); // print the second
+    if ( (epoch) < 10 ) {
+      Serial.print('0');
+      sendStrXY(("0"), 6, 13);
+      sendStrXY((display_buffer_seconds), 6, 15);
+    }
+    else{ sendStrXY((display_buffer_seconds), 6, 13); }
+    sendStrXY((":"), 6, 12);
   }
 }
 
@@ -217,6 +211,33 @@ unsigned long sendNTPpacket(IPAddress& address)
   udp.endPacket();
 }
 
+void printTime(unsigned long epoch, int kind){
+  char display_buffer_hours[4];
 
-
+  
+  if (kind == 1){
+    // --- HOURS ---
+    String display_time_hours = String(((epoch  % 86400L) / 3600) + 2);
+    display_time_hours.toCharArray(display_buffer_hours, 4);
+    Serial.print((epoch  % 86400L) / 3600); // print the hour (86400 equals secs per day)
+    Serial.print(':');
+    if ( ((epoch % 3600) / 60) < 10 ) {
+      Serial.print('00');
+      sendStrXY(("0"), 6, 7);
+      sendStrXY((display_buffer_hours), 6, 8);
+    }
+    else{ 
+      sendStrXY((display_buffer_hours), 6, 7);
+    }
+    
+  } else if (kind == 2){
+    
+    // Minutes
+    
+  } else {
+    
+    // Seconds
+    
+  }
+}
 
