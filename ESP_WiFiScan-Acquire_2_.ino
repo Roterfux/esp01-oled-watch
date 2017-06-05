@@ -4,8 +4,8 @@
 
 
 char buffer[20];
-char* password = "JuV30062013";
-char* ssid     = "Fuxbau";
+char* password = "..";
+char* ssid     = "..";
 String MyNetworkSSID = "Fuxbau"; // SSID you want to connect to Same as SSID
 bool Fl_MyNetwork = false; // Used to flag specific network has been found
 bool Fl_NetworkUP = false; // Used to flag network connected and operational.
