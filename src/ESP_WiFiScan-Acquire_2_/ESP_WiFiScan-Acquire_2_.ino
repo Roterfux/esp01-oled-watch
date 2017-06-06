@@ -3,9 +3,9 @@
 #include <WiFiUdp.h>
 
 char buffer[20];
-char* password         = "...";
-char* ssid             = "...";
-String MyNetworkSSID   = "..."; // SSID you want to connect to Same as SSID
+char* password       = "JuV30062013";
+char* ssid           = "Fuxbau";
+String MyNetworkSSID = "Fuxbau"; // SSID you want to connect to Same as SSID
 bool Fl_MyNetwork      = false; // Used to flag specific network has been found
 bool Fl_NetworkUP      = false; // Used to flag network connected and operational.
 
@@ -51,7 +51,6 @@ void loop()
         Serial.println("Starting Process Scanning...");
         sendStrXY("SCANNING ...", 0, 1);
         Scan_Wifi_Networks();
-        //Draw_WAVES();
         delay(2000);
 
         if (Fl_MyNetwork) {
@@ -91,7 +90,7 @@ void loop()
     delay(10000);    // Wait a little before trying again
 }
 
-void ntpRequest(){
+unsigned long ntpRequest() {
     //get a random server from the pool
     WiFi.hostByName(ntpServerName, timeServerIP);
 
@@ -121,11 +120,12 @@ void ntpRequest(){
         // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
         const unsigned long seventyYears = 2208988800UL;
         // subtract seventy years:
-        unsigned long epoch = secsSince1900 - seventyYears;
+        epoch = secsSince1900 - seventyYears;
 
         printTime(epoch, 1);
         printTime(epoch, 2);
         printTime(epoch, 3);
+        return epoch;
     }
 }
 
