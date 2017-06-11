@@ -22,7 +22,10 @@ WiFiUDP udp;
 const int interval  = 100;
 int count           = 0;
 unsigned long epoch = 0;
-extern "C" { #include "user_interface.h" }
+
+extern "C" {
+    #include "user_interface.h"
+}
 
 void setup() {
     Serial.begin(115200);
@@ -173,8 +176,9 @@ void printTime(unsigned long epoch, int kind) {
 
   if (kind == 1) {
     // --- HOURS ---
+    int calc = (((epoch % 86400L) / 3600) + 2);
     int hours;
-    if ((((epoch % 86400L) / 3600) + 2) == 25) { hours = 1; } else { hours = (((epoch % 86400L) / 3600) + 2); }
+    if (calc == 25) { hours = 1; } else { hours = calc + 2; }
 
     String display_time_hours = String(hours);
     display_time_hours.toCharArray(display_buffer_hours, 4);
@@ -190,10 +194,11 @@ void printTime(unsigned long epoch, int kind) {
 
   if (kind == 2)
   {
+     int calc = (epoch % 3600) / 60;
     // Minutes
-    String display_time_minutes = String((epoch % 3600) / 60);
+    String display_time_minutes = String(calc);
     display_time_minutes.toCharArray(display_buffer_minutes, 4);
-    Serial.print((epoch % 3600) / 60); // print the minute (3600 equals secs per minute)
+    Serial.print(calc); // print the minute (3600 equals secs per minute)
     setXY(pos_y, 7);
     if ((epoch % 60) < 10) {
       sendStr("0");
