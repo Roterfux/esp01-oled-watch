@@ -16,6 +16,8 @@ void StartUp_OLED()
   displayOff();
   setXY(0,0);
   clear_display();
+  sendcommand(0xC8);
+  sendcommand(0xA0 | 0x1);
   displayOn();
 }
 
@@ -36,8 +38,8 @@ static void clear_display(void)
 {
   unsigned char i,k;
   for(k=0;k<8;k++)
-  {	
-    setXY(k,0);    
+  {
+    setXY(k,0);
     {
       for(i=0;i<128;i++)     //clear all COL
       {
@@ -48,8 +50,8 @@ static void clear_display(void)
 }
 
 
-// Actually this sends a byte, not a char to draw in the display. 
-static void SendChar(unsigned char data) 
+// Actually this sends a byte, not a char to draw in the display.
+static void SendChar(unsigned char data)
 {
   Wire.beginTransmission(OLED_address);  // begin transmitting
   Wire.write(0x40);                      //data mode
@@ -65,10 +67,10 @@ static void sendCharXY(unsigned char data, int X, int Y)
   setXY(X, Y);
   Wire.beginTransmission(OLED_address); // begin transmitting
   Wire.write(0x40);//data mode
-  
+
   for(int i=0;i<8;i++)
     Wire.write(pgm_read_byte(myFont[data-0x20]+i));
-    
+
   Wire.endTransmission();    // stop transmitting
 }
 
@@ -92,7 +94,7 @@ static void setXY(unsigned char row,unsigned char col)
 
 
 // Prints a string regardless the cursor position.
-static void sendStr(unsigned char *string)
+static void sendStr( char *string)
 {
   unsigned char i=0;
   while(*string)
@@ -140,20 +142,20 @@ static void init_OLED(void)
     sendcommand(0x14);
     sendcommand(0x20);              //MEMORYMODE
     sendcommand(0x00);              //0x0 act like ks0108
-    //sendcommand(0xA0 | 0x1);      //SEGREMAP   //Rotate screen 180 deg
+    sendcommand(0xA0 | 0x1);      //SEGREMAP   //Rotate screen 180 deg
     sendcommand(0xA0);
-    //sendcommand(0xC8);            //COMSCANDEC  Rotate screen 180 Deg
+    sendcommand(0xC8);            //COMSCANDEC  Rotate screen 180 Deg
     sendcommand(0xC0);
     sendcommand(0xDA);              //0xDA
     sendcommand(0x12);              //COMSCANDEC
     sendcommand(0x81);              //SETCONTRAS
     sendcommand(0xCF);
-    sendcommand(0xd9);              //SETPRECHARGE 
+    sendcommand(0xd9);              //SETPRECHARGE
     sendcommand(0xF1);
-    sendcommand(0xDB);              //SETVCOMDETECT                
+    sendcommand(0xDB);              //SETVCOMDETECT
     sendcommand(0x40);
-    sendcommand(0xA4);              //DISPLAYALLON_RESUME        
-    sendcommand(0xA6);              //NORMALDISPLAY             
+    sendcommand(0xA4);              //DISPLAYALLON_RESUME
+    sendcommand(0xA6);              //NORMALDISPLAY
 
   clear_display();
   sendcommand(0x2e);            // stop scroll
@@ -163,57 +165,10 @@ static void init_OLED(void)
   //  sendcommand(0xc8);
   //  delay(1000);
   //----------------------------REVERSE comments----------------------------//
-  // sendcommand(0xa7);  //Set Inverse Display  
+  // sendcommand(0xa7);  //Set Inverse Display
   // sendcommand(0xae);		//display off
   sendcommand(0x20);            //Set Memory Addressing Mode
   sendcommand(0x00);            //Set Memory Addressing Mode ab Horizontal addressing mode
-  // sendcommand(0x02);         // Set Memory Addressing Mode ab Page addressing mode(RESET)  
-  
- //  setXY(0,0);
-  // Display Logo here :)
-//  for(int i=0;i<128*8;i++)     // show 128* 64 Logo
- // {
-  //  SendChar(pgm_read_byte(logo+i));
- // }
- // sendcommand(0xaf);		//display on
-  
- // delay(5000); 
+  // sendcommand(0x02);         // Set Memory Addressing Mode ab Page addressing mode(RESET)
+
 }
-
-
-/*
-------------------------------------------------------------------------------------
-              Added to Mikes routine Draw routines
-------------------------------------------------------------------------------------
-*/
-
-
-void Draw_WIFI()
-{
-   clear_display();
-   setXY(0,0);
-   // Display Logo here :)
-   for(int i=0;i<128*8;i++)     // show 128* 64 Logo
-   {
-    SendChar(pgm_read_byte(WIFI1+i));
-   }
-   sendcommand(0xaf);		//display on
-}
-
-
-void Draw_WAVES()
-{
-   clear_display();
-   setXY(0,0);
-   // Display Logo here :)
-   for(int i=0;i<128*8;i++)     // show 128* 64 Logo
-   {
-    SendChar(pgm_read_byte(rfwaves+i));
-   }
-   sendcommand(0xaf);		//display on
-}
-
-
-
-
-
