@@ -3,7 +3,7 @@
 #include <Wire.h>
 
 char buffer[20];
-char *password         = "JuV30062013";
+char *password         = "...";
 char *ssid             = "Fuxbau";
 String MyNetworkSSID   = "Fuxbau"; // SSID you want to connect to Same as SSID
 bool Fl_MyNetwork      = false;       // Used to flag specific network has been found
@@ -13,7 +13,8 @@ unsigned int localPort = 2390; // local port to listen for UDP packets
  *  Lookup the IP address for the host name instead */
 // IPAddress timeServer(129, 6, 15, 28); // time.nist.gov NTP server
 IPAddress timeServerIP; // time.nist.gov NTP server address
-const char *ntpServerName = "time.nist.gov";
+//pool.ntp.org
+const char *ntpServerName = "0.at.pool.ntp.org"; //"time.nist.gov";
 const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
 byte packetBuffer[NTP_PACKET_SIZE]; // buffer to hold incoming and outgoing
                                     // packets
@@ -36,7 +37,9 @@ void setup() {
     StartUp_OLED(); // Init Oled and fire up!
     Serial.println("OLED Init...");
     clear_display();
-    sendStrXY("START-UP ...  ", 6, 1);
+    //setXY(6, 1);
+    //sendStr("START-UP ...  ");
+    drawBigText();
     delay(1000);
     Serial.println("Setup done");
     clear_display(); // Clear OLED
@@ -71,7 +74,7 @@ void loop() {
         Serial.println("Not Connected");
         clear_display();                   // Clear OLED
         sendStrXY("Not connected!", 4, 1); // YELLOW LINE DISPLAY
-        delay(1000);
+        //delay(1000);
       }
     }
     else
@@ -80,11 +83,16 @@ void loop() {
       Serial.println("Not Connected");
       clear_display(); // Clear OLED
       sendStrXY("Not connected!", 4, 1);
-      delay(1000);
+      //delay(1000);
     }
   }
   if (count > interval) {
-    epoch = ntpRequest();
+        unsigned long time_update = ntpRequest();
+        if(time_update > 0) {
+            epoch = time_update;
+        } else {
+            epoch = epoch + 5;
+        }
     count = 0;
   }
   else
@@ -108,8 +116,10 @@ unsigned long ntpRequest() {
   clear_display(); // Clear OLED
   int cb = udp.parsePacket();
   if (!cb) {
+    clear_display(); // Clear OLED
     Serial.println("no packet yet");
     sendStrXY("No Wifi connect.", 0, 0);
+    return 0;
   }
   else
   {
@@ -178,7 +188,7 @@ void printTime(unsigned long epoch, int kind) {
     // --- HOURS ---
     int calc = (((epoch % 86400L) / 3600) + 2);
     int hours;
-    if (calc == 25) { hours = 1; } else { hours = calc + 2; }
+    if (calc == 25) { hours = 1; } else { hours = calc; }
 
     String display_time_hours = String(hours);
     display_time_hours.toCharArray(display_buffer_hours, 4);
@@ -222,4 +232,14 @@ void printTime(unsigned long epoch, int kind) {
     { sendStr(display_buffer_seconds); }
   }
   setXY(0, 0);
+}
+
+
+void drawBigText()
+{
+    sendStrXY("000", 0, 0);
+    sendStrXY("0 0", 1, 0);
+    sendStrXY("0 0", 2, 0);
+    sendStrXY("0 0", 3, 0);
+    sendStrXY("000", 4, 0);
 }

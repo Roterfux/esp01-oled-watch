@@ -107,7 +107,6 @@ static void sendStr( char *string)
   }
 }
 
-
 // Prints a string in coordinates X Y, being multiples of 8.
 // This means we have 16 COLS (0-15) and 8 ROWS (0-7).
 static void sendStrXY( char *string, int X, int Y)
