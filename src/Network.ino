@@ -38,7 +38,7 @@ void Scan_Wifi_Networks()
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
       Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*");
-      delay(10);
+      delay(15);
     }
   }
   Serial.println("");
@@ -68,8 +68,7 @@ void Do_Connect()                  // Try to connect to the Found WIFI Network!
       Fl_NetworkUP = true;
       return;
     }
-    delay(500);
+    delay(750);
     Serial.print(".");
   }
 }
-
