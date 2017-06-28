@@ -62,13 +62,15 @@ void drawConvertedText(int x, int y, unsigned long value)
 }
 
 void printTime(int kind) {
-    u8g2.setFont(u8g2_font_inr16_mf);
-    int font_width = 16;
-    int y          = 22;
+    u8g2.setFont(u8g2_font_inr24_mr);
+    int font_width = 25;
+    int y          = 12;
+    int xh         = 2;
+    int xm         = 40;
+    int xs         = 87;
 
     if (kind == 1) {
         // Hours
-        int xh   = 12;
         int calc = (((epoch % 86400L) / 3600) + 2);
         int hours;
         if (calc >= 24) hours = calc - 24; else hours = calc;
@@ -79,7 +81,7 @@ void printTime(int kind) {
         drawConvertedText(xh, y, hours);
     }
     if (kind == 2) {
-        int xm   = 50;
+
         int calc = (epoch % 3600) / 60;
         // Minutes
         if (calc < 10) {
@@ -90,7 +92,7 @@ void printTime(int kind) {
     }
     if (kind == 3) {
         // Seconds
-        int xs   = 87;
+
         int calc = epoch % 60;
         if (calc < 10) {
             u8g2.drawStr(xs, y, "0");
@@ -102,7 +104,7 @@ void printTime(int kind) {
 
 void draw(void) {
   u8g2_prepare();
-  u8g2.drawFrame(8, 8, 112, 48);
+  u8g2.drawFrame(2, 2, 126, 62);
 
   //u8g2.setFont(u8g2_font_u8glib_4_tf);
   //u8g2.drawStr(1, 1, "Time");
@@ -164,7 +166,7 @@ void loop(void) {
   draw();
   u8g2.nextPage();
   // deley between each page
-  delay(1000);
+  delay(950);
 }
 
 unsigned long ntpRequest() {
