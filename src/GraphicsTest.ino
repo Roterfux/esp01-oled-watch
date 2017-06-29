@@ -19,12 +19,11 @@
   No graphics, 8x8 Text only.
 
 */
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/2, /* data=*/0,
-                                         /* reset=*/U8X8_PIN_NONE);
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/2, /* data=*/0, /* reset=*/U8X8_PIN_NONE);
 
 char buffer[20];
 char *password = "JuV30062013";
-char *ssid = "Fuxbau";
+char *ssid           = "Fuxbau";
 String MyNetworkSSID = "Fuxbau"; // SSID you want to connect to Same as SSID
 bool Fl_MyNetwork = false;       // Used to flag specific network has been found
 bool Fl_NetworkUP = false; // Used to flag network connected and operational.
@@ -37,8 +36,8 @@ byte packetBuffer[NTP_PACKET_SIZE]; // buffer to hold incoming and outgoing
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP udp;
 int reconnect_interval = 10;
-int count = 0;
-unsigned long epoch = 0;
+int count              = 0;
+unsigned long epoch    = 0;
 
 extern "C" {
 #include "user_interface.h"
@@ -62,12 +61,13 @@ void drawConvertedText(int x, int y, unsigned long value)
 }
 
 void printTime(int kind) {
-    u8g2.setFont(u8g2_font_inr24_mr);
-    int font_width = 25;
-    int y          = 12;
-    int xh         = 2;
-    int xm         = 40;
-    int xs         = 87;
+    u8g2.setFont(u8g2_font_inr21_mr);
+    u8g2.setFontPosCenter();
+    int font_width = 19;
+    int y          = 32;
+    int xh         = 5;
+    int xm         = 46;
+    int xs         = 86;
 
     if (kind == 1) {
         // Hours
@@ -104,7 +104,8 @@ void printTime(int kind) {
 
 void draw(void) {
   u8g2_prepare();
-  u8g2.drawFrame(2, 2, 126, 62);
+  u8g2.drawFrame(0, 0, 128, 64);
+  u8g2.drawFrame(2, 2, 124, 60);
 
   //u8g2.setFont(u8g2_font_u8glib_4_tf);
   //u8g2.drawStr(1, 1, "Time");
@@ -131,10 +132,12 @@ void loop(void) {
     Scan_Wifi_Networks();
     if (Fl_MyNetwork) {
       Do_Connect();
+      //u8g2.clearBuffer();
       if (Fl_NetworkUP) {
       } else {
         u8g2.drawStr(40, 0, "Not connected!");
       }
+      u8g2.sendBuffer();
     } else {
       u8g2.drawStr(40, 0, "Not connected!");
     }
@@ -154,7 +157,7 @@ void loop(void) {
       u8g2.setFont(u8g2_font_u8glib_4_tf);
       u8g2.drawStr(1, 1, "Time!");
     }
-    WiFi.disconnect();
+    //WiFi.disconnect();
     count = 0;
   } else {
     epoch++;
@@ -162,9 +165,11 @@ void loop(void) {
   }
 
   // picture loop
-  u8g2.firstPage();
+  //u8g2.firstPage();
+  u8g2.clearBuffer();
   draw();
-  u8g2.nextPage();
+  //u8g2.nextPage();
+  u8g2.sendBuffer();
   // deley between each page
   delay(950);
 }
@@ -175,7 +180,7 @@ unsigned long ntpRequest() {
   WiFi.hostByName(ntpServerName, timeServerIP);
   sendNTPpacket(timeServerIP); // send an NTP packet to a time server
   // wait to see if a reply is available
-  delay(2500);
+  delay(3000);
   // clear_display(); // Clear OLED
   int cb = udp.parsePacket();
   if (!cb) {
