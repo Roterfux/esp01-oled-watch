@@ -7,5 +7,4 @@ What we need
 * USB to Serial converter
 * ...
 
-Fritzing sketch
-* Coming soon
+* Fritzing sketch
