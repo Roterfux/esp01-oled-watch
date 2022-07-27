@@ -22,9 +22,9 @@
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/2, /* data=*/0, /* reset=*/U8X8_PIN_NONE);
 
 char buffer[20];
-char *password = "?";
-char *ssid           = "Fuxbau";
-String MyNetworkSSID = "Fuxbau"; // SSID you want to connect to Same as SSID
+char *password = "password";
+char *ssid           = "ssid";
+String MyNetworkSSID = "ssid"; // SSID you want to connect to Same as SSID
 bool Fl_MyNetwork = false;       // Used to flag specific network has been found
 bool Fl_NetworkUP = false; // Used to flag network connected and operational.
 unsigned int localPort = 2390; // local port to listen for UDP packets
